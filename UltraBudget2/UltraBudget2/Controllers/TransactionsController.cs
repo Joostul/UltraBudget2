@@ -30,6 +30,19 @@ namespace UltraBudget2.Controllers
             transaction.Id = Guid.NewGuid();
             _repository.UpsertTransaction(transaction);
             return RedirectToAction("Index");
-        }        
+        }
+
+        public IActionResult Edit(string id)
+        {
+            var existingTransaction = _repository.GetTransaction(Guid.Parse(id));
+            return View(existingTransaction);
+        }
+
+        [HttpPost]
+        public IActionResult Edit([FromForm] Transaction transaction)
+        {
+            _repository.UpsertTransaction(transaction);
+            return RedirectToAction("Index");
+        }
     }
 }

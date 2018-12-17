@@ -10,6 +10,7 @@ namespace UltraBudget2.Repositories
     {
         IEnumerable<Transaction> GetTransactions();
         void UpsertTransaction(Transaction transaction);
+        Transaction GetTransaction(Guid id);
         void DeleteTransaction();
 
 

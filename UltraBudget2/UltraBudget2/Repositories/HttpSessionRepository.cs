@@ -41,7 +41,6 @@ namespace UltraBudget2.Repositories
                 transactions.Add(updatedTransction);
             }
 
-
             _session.Set("transactions", transactions);
         }
 
@@ -55,6 +54,11 @@ namespace UltraBudget2.Repositories
             var transactions = _session.Get<List<Transaction>>("transactions");
 
             return transactions;
+        }
+
+        public Transaction GetTransaction(Guid id)
+        {
+            return GetTransactions().SingleOrDefault(t => t.Id == id);
         }
     }
 }
