@@ -7,16 +7,19 @@ using UltraBudget2.Models;
 
 namespace UltraBudget2.Repositories
 {
-    public class HttpSessionRepository : IBudgetRepository
+    public class HttpSessionBudgetRepository : IBudgetRepository
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private ISession _session => _httpContextAccessor.HttpContext.Session;
+        private const string _transactionsSessionKey = "transactions";
+        private const string _categoriesSessionKey = "categories";
 
-        public HttpSessionRepository(IHttpContextAccessor httpContextAccessor)
+        public HttpSessionBudgetRepository(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
 
+        // Transactions
         public void UpsertTransaction(Transaction transaction)
         {
             var transactions = GetTransactions() == null ? new List<Transaction>() : GetTransactions().ToList();
@@ -41,7 +44,7 @@ namespace UltraBudget2.Repositories
                 transactions.Add(updatedTransction);
             }
 
-            _session.Set("transactions", transactions);
+            _session.Set(_transactionsSessionKey, transactions);
         }
 
         public void DeleteTransaction(Guid id)
@@ -53,13 +56,13 @@ namespace UltraBudget2.Repositories
                 var transactions = GetTransactions().ToList();
                 var existingTransactionIndex = transactions.IndexOf(existingTransaction) + 1;
                 transactions.RemoveAt(existingTransactionIndex);
-                _session.Set("transactions", transactions);
+                _session.Set(_transactionsSessionKey, transactions);
             }
         }
 
         public IEnumerable<Transaction> GetTransactions()
         {
-            var transactions = _session.Get<List<Transaction>>("transactions");
+            var transactions = _session.Get<List<Transaction>>(_transactionsSessionKey);
 
             return transactions;
         }
@@ -67,6 +70,56 @@ namespace UltraBudget2.Repositories
         public Transaction GetTransaction(Guid id)
         {
             return GetTransactions().SingleOrDefault(t => t.Id == id);
+        }
+
+        // Categories
+        public IEnumerable<Category> GetCategories()
+        {
+            var categories = _session.Get<List<Category>>(_categoriesSessionKey);
+
+            return categories;
+        }
+
+        public Category GetCategory(Guid id)
+        {
+            return GetCategories().SingleOrDefault(c => c.Id == id);
+        }
+
+        public void UpsertCategory(Category category)
+        {
+            var categories = GetCategories() == null ? new List<Category>() : GetCategories().ToList();
+
+            if (!categories.Any(t => t.Id == category.Id))
+            {
+                categories.Add(category);
+            }
+            else
+            {
+                var existingCategory = categories.SingleOrDefault(t => t.Id == category.Id);
+                var updatedCategory = new Category()
+                {
+                    Id = existingCategory.Id,
+                    Name = string.IsNullOrWhiteSpace(category.Name) ? existingCategory.Name : category.Name
+                };
+
+                categories.Remove(existingCategory);
+                categories.Add(updatedCategory);
+            }
+
+            _session.Set(_categoriesSessionKey, categories);
+        }
+
+        public void DeleteCategory(Guid id)
+        {
+            var existingCategory = GetCategory(id);
+
+            if (existingCategory != null)
+            {
+                var categories = GetCategories().ToList();
+                var existingCategoryIndex = categories.IndexOf(existingCategory) + 1;
+                categories.RemoveAt(existingCategoryIndex);
+                _session.Set(_categoriesSessionKey, categories);
+            }
         }
     }
 }

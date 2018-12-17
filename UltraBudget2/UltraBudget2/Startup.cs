@@ -40,7 +40,7 @@ namespace UltraBudget2
             services.AddHttpContextAccessor();
             services.AddDistributedMemoryCache();
             services.AddSession();
-            services.AddTransient<IBudgetRepository, HttpSessionRepository>();
+            services.AddTransient<IBudgetRepository, HttpSessionBudgetRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
