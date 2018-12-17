@@ -24,12 +24,10 @@ namespace UltraBudget2.Controllers
             return View();
         }
 
-        [HttpPost]
-        public IActionResult Create([FromForm] Transaction transaction)
+        public IActionResult Delete(Transaction transaction)
         {
-            transaction.Id = Guid.NewGuid();
-            _repository.UpsertTransaction(transaction);
-            return RedirectToAction("Index");
+            var existingTransaction = _repository.GetTransaction(transaction.Id);
+            return View(existingTransaction);
         }
 
         public IActionResult Edit(string id)
@@ -39,10 +37,27 @@ namespace UltraBudget2.Controllers
         }
 
         [HttpPost]
+        public IActionResult Create([FromForm] Transaction transaction)
+        {
+            transaction.Id = Guid.NewGuid();
+            _repository.UpsertTransaction(transaction);
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult Delete(string id)
+        {
+            _repository.DeleteTransaction(Guid.Parse(id));
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
         public IActionResult Edit([FromForm] Transaction transaction)
         {
             _repository.UpsertTransaction(transaction);
             return RedirectToAction("Index");
         }
+
+        
     }
 }

@@ -44,9 +44,17 @@ namespace UltraBudget2.Repositories
             _session.Set("transactions", transactions);
         }
 
-        public void DeleteTransaction()
+        public void DeleteTransaction(Guid id)
         {
-            throw new NotImplementedException();
+            var existingTransaction = GetTransaction(id);
+
+            if(existingTransaction != null)
+            {
+                var transactions = GetTransactions().ToList();
+                var existingTransactionIndex = transactions.IndexOf(existingTransaction) + 1;
+                transactions.RemoveAt(existingTransactionIndex);
+                _session.Set("transactions", transactions);
+            }
         }
 
         public IEnumerable<Transaction> GetTransactions()

@@ -6,7 +6,6 @@ namespace UltraBudget2.Models
     public class Transaction
     {
         public Guid Id { get; set; }
-        [DataType(DataType.Currency)]
         public decimal Amount { get; set; }
         [DataType(DataType.Date)]
         public DateTime DateTime { get; set; }
