@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UltraBudget2.Models;
 using UltraBudget2.Repositories;
 
@@ -21,6 +24,8 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Create()
         {
+            ViewData["Categories"] = GetCategoriesDropDown();
+
             return View();
         }
 
@@ -32,6 +37,7 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Edit(string id)
         {
+            ViewData["Categories"] = GetCategoriesDropDown();
             var existingTransaction = _repository.GetTransaction(Guid.Parse(id));
             return View(existingTransaction);
         }
@@ -56,8 +62,21 @@ namespace UltraBudget2.Controllers
         {
             _repository.UpsertTransaction(transaction);
             return RedirectToAction("Index");
-        }
-
+        }      
         
+        private List<SelectListItem> GetCategoriesDropDown()
+        {
+            var selectListCategories = new List<SelectListItem>();
+            var categories = _repository.GetCategories();
+            if (categories != null)
+            {
+                foreach (var category in categories)
+                {
+                    selectListCategories.Add(new SelectListItem() { Text = category.Name, Value = category.Name });
+                }
+            }
+
+            return selectListCategories;
+        }
     }
 }
