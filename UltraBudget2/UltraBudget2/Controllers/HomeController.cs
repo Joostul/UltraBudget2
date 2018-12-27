@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using UltraBudget2.Models;
+using UltraBudget2.Repositories;
 
 namespace UltraBudget2.Controllers
 {
     public class HomeController : Controller
     {
+        private IBudgetRepository _repository { get; set; }
+
+        public HomeController(IBudgetRepository repository)
+        {
+            _repository = repository;
+        }
+
         public IActionResult Index()
         {
-            return View();
+            return View(_repository.GetTransactions());
         }
 
         public IActionResult About()
