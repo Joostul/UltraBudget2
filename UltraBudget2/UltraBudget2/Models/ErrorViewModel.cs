@@ -1,5 +1,3 @@
-using System;
-
 namespace UltraBudget2.Models
 {
     public class ErrorViewModel
