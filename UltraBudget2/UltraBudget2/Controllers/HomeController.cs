@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using UltraBudget2.Extensions;
 using UltraBudget2.Models;
 using UltraBudget2.Repositories;
 
@@ -52,28 +53,36 @@ namespace UltraBudget2.Controllers
         public IActionResult Export()
         {
             var fileName = $"UltraBudget_{DateTime.Now.ToShortDateString()}.txt"; // TODO: set as budget name
-            var budget = new BudgetDao
-            {
-                Categories = _repository.GetCategories(),
-                Transactions = _repository.GetTransactions()
-            };
-            byte[] file = ObjectToByteArray(budget);
+            var budget = _repository.Export();
+            byte[] file = budget.ToByteArray();
             return File(file, "text/plain", fileName);
         }
 
-        private byte[] ObjectToByteArray(object obj)
+        public IActionResult Import()
         {
-            if (obj == null)
-                return null;
-            TextWriter textWriter = new StringWriter();
-            JsonSerializer jsonSerializer = new JsonSerializer();
-            jsonSerializer.Serialize(textWriter, obj);
+            return View();
+        }
 
-            var encoding = new UTF8Encoding();
-            byte[] bytes = encoding.GetBytes(textWriter.ToString());
+        [HttpPost]
+        public async Task<IActionResult> Import(IFormFile file)
+        {
+            BudgetDao budget = null;
 
-            return bytes;
+            try
+            {
+                using (var reader = new StreamReader(file.OpenReadStream()))
+                {
+                    budget = JsonConvert.DeserializeObject<BudgetDao>(reader.ReadToEnd());
+                    _repository.Import(budget);
+                }
+            }
+            catch (Exception)
+            {
+                //ViewBag.Message = "Not a valid budget file.";
+                return View();
+            }
 
+            return View();
         }
     }
 }

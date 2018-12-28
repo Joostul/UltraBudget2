@@ -6,6 +6,9 @@ namespace UltraBudget2.Repositories
 {
     public interface IBudgetRepository
     {
+        BudgetDao Export();
+        void Import(BudgetDao budget);
+
         IEnumerable<Transaction> GetTransactions();
         Transaction GetTransaction(Guid id);
         void UpsertTransaction(Transaction transaction);

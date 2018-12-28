@@ -72,6 +72,14 @@ namespace UltraBudget2.Repositories
             return GetTransactions().SingleOrDefault(t => t.Id == id);
         }
 
+        public void SetTransactions(IEnumerable<Transaction> transactions)
+        {
+            foreach (var transaction in transactions)
+            {
+                UpsertTransaction(transaction);
+            }
+        }
+
         // Categories
         public IEnumerable<Category> GetCategories()
         {
@@ -120,6 +128,29 @@ namespace UltraBudget2.Repositories
                 categories.RemoveAt(existingCategoryIndex);
                 _session.Set(_categoriesSessionKey, categories);
             }
+        }
+
+        public void SetCategories(IEnumerable<Category> categories)
+        {
+            foreach (var category in categories)
+            {
+                UpsertCategory(category);
+            }
+        }
+
+        // Import/export dao
+        public BudgetDao Export()
+        {
+            return new BudgetDao()
+            {
+                Categories = GetCategories(),
+                Transactions = GetTransactions()
+            };
+        }
+
+        public void Import(BudgetDao budget)
+        {
+            throw new NotImplementedException();
         }
     }
 }
