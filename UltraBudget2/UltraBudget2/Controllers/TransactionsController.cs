@@ -23,8 +23,8 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Create()
         {
-            ViewData["Categories"] = GetCategoriesDropDown();
-
+            ViewData["Categories"] = GetCategoriesDropdown();
+            ViewData["Accounts"] = GetAccountsDropdown();
             return View();
         }
 
@@ -36,7 +36,8 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Edit(string id)
         {
-            ViewData["Categories"] = GetCategoriesDropDown();
+            ViewData["Categories"] = GetCategoriesDropdown();
+            ViewData["Accounts"] = GetAccountsDropdown();
             var existingTransaction = _repository.GetTransaction(Guid.Parse(id));
             return View(existingTransaction);
         }
@@ -63,7 +64,7 @@ namespace UltraBudget2.Controllers
             return RedirectToAction("Index");
         }      
         
-        private List<SelectListItem> GetCategoriesDropDown()
+        private List<SelectListItem> GetCategoriesDropdown()
         {
             var selectListCategories = new List<SelectListItem>();
             var categories = _repository.GetCategories();
@@ -72,6 +73,21 @@ namespace UltraBudget2.Controllers
                 foreach (var category in categories)
                 {
                     selectListCategories.Add(new SelectListItem() { Text = category.Name, Value = category.Name });
+                }
+            }
+
+            return selectListCategories;
+        }
+
+        private List<SelectListItem> GetAccountsDropdown()
+        {
+            var selectListCategories = new List<SelectListItem>();
+            var accounts = _repository.GetAccounts();
+            if (accounts != null)
+            {
+                foreach (var account in accounts)
+                {
+                    selectListCategories.Add(new SelectListItem() { Text = account.Name, Value = account.Name });
                 }
             }
 

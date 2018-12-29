@@ -24,6 +24,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Payee)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -54,6 +57,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Payee)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Account)
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |

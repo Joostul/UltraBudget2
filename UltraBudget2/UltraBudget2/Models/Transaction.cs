@@ -13,5 +13,7 @@ namespace UltraBudget2.Models
         public string Category { get; set; }
         [DataType(DataType.Text)]
         public string Payee { get; set; }
+        [DataType(DataType.Text)]
+        public string Account { get; set; }
     }
 }

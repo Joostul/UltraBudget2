@@ -13,6 +13,7 @@ namespace UltraBudget2.Repositories
         private ISession _session => _httpContextAccessor.HttpContext.Session;
         private const string _transactionsSessionKey = "transactions";
         private const string _categoriesSessionKey = "categories";
+        private const string _accountsSessionKey = "Accounts";
 
         public HttpSessionBudgetRepository(IHttpContextAccessor httpContextAccessor)
         {
@@ -144,13 +145,64 @@ namespace UltraBudget2.Repositories
             return new BudgetDao()
             {
                 Categories = GetCategories(),
-                Transactions = GetTransactions()
+                Transactions = GetTransactions(),
+                Accounts = GetAccounts()
             };
         }
 
         public void Import(BudgetDao budget)
         {
             throw new NotImplementedException();
+        }
+
+        // Accounts
+        public IEnumerable<Account> GetAccounts()
+        {
+            var accounts = _session.Get<List<Account>>(_accountsSessionKey);
+
+            return accounts;
+        }
+
+        public Account GetAccount(Guid id)
+        {
+            return GetAccounts().SingleOrDefault(c => c.Id == id);
+        }
+
+        public void UpsertAccount(Account account)
+        {
+            var accounts = GetAccounts() == null ? new List<Account>() : GetAccounts().ToList();
+
+            if (!accounts.Any(t => t.Id == account.Id))
+            {
+                accounts.Add(account);
+            }
+            else
+            {
+                var existingAccount = accounts.SingleOrDefault(t => t.Id == account.Id);
+                var updatedAccount = new Account()
+                {
+                    Id = existingAccount.Id,
+                    Name = string.IsNullOrWhiteSpace(account.Name) ? existingAccount.Name : account.Name
+                };
+
+                accounts.Remove(existingAccount);
+                accounts.Add(updatedAccount);
+            }
+
+            _session.Set(_accountsSessionKey, accounts);
+        }
+
+        public void DeleteAccount(Guid id)
+        {
+            var existingAccount = GetAccount(id);
+
+            if (existingAccount != null)
+            {
+                var accounts = GetAccounts().ToList();
+                var existingAccountIndex = accounts.IndexOf(existingAccount) + 1;
+                accounts.RemoveAt(existingAccountIndex);
+                _session.Set(_accountsSessionKey, accounts);
+            }
         }
     }
 }

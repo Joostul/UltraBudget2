@@ -18,5 +18,10 @@ namespace UltraBudget2.Repositories
         Category GetCategory(Guid id);
         void UpsertCategory(Category category);
         void DeleteCategory(Guid id);
+
+        IEnumerable<Account> GetAccounts();
+        Account GetAccount(Guid id);
+        void UpsertAccount(Account account);
+        void DeleteAccount(Guid id);
     }
 }
