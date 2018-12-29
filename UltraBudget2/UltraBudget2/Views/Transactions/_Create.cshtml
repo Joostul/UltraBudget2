@@ -1,0 +1,39 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@model UltraBudget2.Models.Transaction
+
+@{
+    ViewData["Title"] = "Create";
+    var categorySelectList = (List<SelectListItem>)TempData["Categories"];
+    var accountSelectList = (List<SelectListItem>)TempData["Accounts"];
+}
+
+<form asp-action="Create">
+    <tr>
+        <td>
+            <input asp-for="Amount" class="form-control" />
+            <span asp-validation-for="Amount" class="text-danger"></span>
+        </td>
+        <td>
+            <input asp-for="DateTime" class="form-control" />
+            <span asp-validation-for="DateTime" class="text-danger"></span>
+        </td>
+        <td>
+            <select asp-for="Category" asp-items="categorySelectList" class="form-control"></select>
+            <span asp-validation-for="Category" class="text-danger"></span>
+        </td>
+        <td>
+            <input asp-for="Payee" class="form-control" />
+            <span asp-validation-for="Payee" class="text-danger"></span>
+        </td>
+        <td>
+            <select asp-for="Account" asp-items="accountSelectList" class="form-control"></select>
+            <span asp-validation-for="Account" class="text-danger"></span>
+        </td>
+        <td>
+            <input type="submit" value="Create" class="btn btn-default" />
+        </td>
+    </tr>
+</form>

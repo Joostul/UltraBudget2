@@ -18,13 +18,16 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Index()
         {
+            // TODO: Maybe can be in constructor?
+            TempData["Categories"] = GetCategoriesDropdown();
+            TempData["Accounts"] = GetAccountsDropdown();
             return View(_repository.GetTransactions());
         }
 
         public IActionResult Create()
         {
-            ViewData["Categories"] = GetCategoriesDropdown();
-            ViewData["Accounts"] = GetAccountsDropdown();
+            TempData["Categories"] = GetCategoriesDropdown();
+            TempData["Accounts"] = GetAccountsDropdown();
             return View();
         }
 
@@ -36,8 +39,8 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Edit(string id)
         {
-            ViewData["Categories"] = GetCategoriesDropdown();
-            ViewData["Accounts"] = GetAccountsDropdown();
+            TempData["Categories"] = GetCategoriesDropdown();
+            TempData["Accounts"] = GetAccountsDropdown();
             var existingTransaction = _repository.GetTransaction(Guid.Parse(id));
             return View(existingTransaction);
         }
