@@ -14,9 +14,9 @@ namespace UltraBudget2.Repositories
         void UpsertTransaction(Transaction transaction);
         void DeleteTransaction(Guid id);
 
-        IEnumerable<Category> GetCategories();
-        Category GetCategory(Guid id);
-        void UpsertCategory(Category category);
+        IEnumerable<MasterCategory> GetCategories();
+        MasterCategory GetCategory(Guid id);
+        void UpsertCategory(MasterCategory category);
         void DeleteCategory(Guid id);
 
         IEnumerable<Account> GetAccounts();

@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    var categorySelectList = (List<SelectListItem>)TempData["Categories"];
+    var accountSelectList = (List<SelectListItem>)TempData["Accounts"];
+    var masterCategories = (List<MasterCategory>)TempData["MasterCategories"];
+}
+
+<div id="main-view" style="height:100%; border:1px dashed green">
+    <div id="months-view" style="display:flex; flex-flow:row wrap; border:1px solid red; min-height:15%;">
+        <div style="display:flex; flex-flow:column; border:1px solid purple; flex-grow:1; width:33%">
+
+        </div>
+        <div style="display:flex; flex-flow:column; border:1px solid purple; flex-grow:1; width:33%">
+
+        </div>
+        <div style="display:flex; flex-flow:column; border:1px solid purple;flex-grow:1; width:33%">
+
+        </div>
+        <div style="display:flex; flex-flow:row; border:1px solid yellow; flex:0 1 100%">
+
+        </div>
+    </div>
+    <div id="budget-view" style="display:flex; flex-flow:row wrap; border:1px solid blue; min-height: 85%">
+        @foreach (var category in masterCategories)
+        {
+            <div style="display:flex; flex-flow:row; border:1px solid orange; flex:0 1 100%">
+                @category.Name
+            </div>
+        }
+    </div>
+</div>

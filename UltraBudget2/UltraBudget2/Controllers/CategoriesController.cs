@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using UltraBudget2.Extensions;
 using UltraBudget2.Models;
 using UltraBudget2.Repositories;
 
@@ -16,15 +19,23 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Index()
         {
-            return View(_repository.GetCategories());
+            var masterCategories = _repository.GetCategories();
+            return View(masterCategories);
         }
 
-        public IActionResult Create()
+        public IActionResult CreateMasterCategory()
         {
             return View();
         }
 
-        public IActionResult Delete(Category category)
+        public IActionResult CreateSubCategory()
+        {
+            var categoriesDropdown = _repository.GetMasterCategoriesDropdown();
+            TempData["Categories"] = categoriesDropdown;
+            return View();
+        }
+
+        public IActionResult Delete(MasterCategory category)
         {
             var existingCategory = _repository.GetCategory(category.Id);
             return View(existingCategory);
@@ -37,10 +48,23 @@ namespace UltraBudget2.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] Category category)
+        public IActionResult CreateMasterCategory([FromForm] MasterCategory category)
         {
             category.Id = Guid.NewGuid();
+            category.SubCategories = new List<SubCategory>();
             _repository.UpsertCategory(category);
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult CreateSubCategory([FromForm] SubCategory category)
+        {
+            var masterCategory = _repository.GetCategories().SingleOrDefault(m => m.Name == category.MasterCategory);
+            
+            category.Id = Guid.NewGuid();
+            masterCategory.SubCategories.Add(category);
+
+            _repository.UpsertCategory(masterCategory);
             return RedirectToAction("Index");
         }
 
@@ -52,7 +76,7 @@ namespace UltraBudget2.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] Category category)
+        public IActionResult Edit([FromForm] MasterCategory category)
         {
             _repository.UpsertCategory(category);
             // TODO: update all transactions in this category

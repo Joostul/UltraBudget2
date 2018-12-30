@@ -87,26 +87,26 @@ namespace UltraBudget2.Repositories
         }
 
         // Categories
-        public IEnumerable<Category> GetCategories()
+        public IEnumerable<MasterCategory> GetCategories()
         {
-            var categories = _session.Get<List<Category>>(_categoriesSessionKey);
+            var categories = _session.Get<List<MasterCategory>>(_categoriesSessionKey);
 
             if(categories == null)
             {
-                return new List<Category>();
+                return new List<MasterCategory>();
             }
 
             return categories;
         }
 
-        public Category GetCategory(Guid id)
+        public MasterCategory GetCategory(Guid id)
         {
             return GetCategories().SingleOrDefault(c => c.Id == id);
         }
 
-        public void UpsertCategory(Category category)
+        public void UpsertCategory(MasterCategory category)
         {
-            var categories = GetCategories() == null ? new List<Category>() : GetCategories().ToList();
+            var categories = GetCategories() == null ? new List<MasterCategory>() : GetCategories().ToList();
 
             if (!categories.Any(t => t.Id == category.Id))
             {
@@ -115,10 +115,12 @@ namespace UltraBudget2.Repositories
             else
             {
                 var existingCategory = categories.SingleOrDefault(t => t.Id == category.Id);
-                var updatedCategory = new Category()
+
+                var updatedCategory = new MasterCategory()
                 {
                     Id = existingCategory.Id,
-                    Name = string.IsNullOrWhiteSpace(category.Name) ? existingCategory.Name : category.Name
+                    Name = string.IsNullOrWhiteSpace(category.Name) ? existingCategory.Name : category.Name,
+                    SubCategories = category.SubCategories
                 };
 
                 categories.Remove(existingCategory);
@@ -141,7 +143,7 @@ namespace UltraBudget2.Repositories
             }
         }
 
-        public void SetCategories(IEnumerable<Category> categories)
+        public void SetCategories(IEnumerable<MasterCategory> categories)
         {
             foreach (var category in categories)
             {

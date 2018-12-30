@@ -11,15 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Views\Categories\Create.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Categories\Delete.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Categories\Edit.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
     <Content Update="Views\Categories\Index.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using UltraBudget2.Extensions;
 using UltraBudget2.Models;
 using UltraBudget2.Repositories;
 
@@ -19,16 +17,15 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Index()
         {
-            // TODO: Maybe can be in constructor?
-            TempData["Categories"] = GetCategoriesDropdown();
-            TempData["Accounts"] = GetAccountsDropdown();
+            TempData["Categories"] = _repository.GetSubCategoriesDropdown();
+            TempData["Accounts"] = _repository.GetAccountsDropdown();
             return View(_repository.GetTransactions());
         }
 
         public IActionResult Create()
         {
-            TempData["Categories"] = GetCategoriesDropdown();
-            TempData["Accounts"] = GetAccountsDropdown();
+            TempData["Categories"] = _repository.GetSubCategoriesDropdown();
+            TempData["Accounts"] = _repository.GetAccountsDropdown();
             return View();
         }
 
@@ -40,8 +37,8 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Edit(string id)
         {
-            TempData["Categories"] = GetCategoriesDropdown();
-            TempData["Accounts"] = GetAccountsDropdown();
+            TempData["Categories"] = _repository.GetSubCategoriesDropdown();
+            TempData["Accounts"] = _repository.GetAccountsDropdown();
             var existingTransaction = _repository.GetTransaction(Guid.Parse(id));
             return View(existingTransaction);
         }
@@ -80,36 +77,6 @@ namespace UltraBudget2.Controllers
                 TempData["ErrorMessage"] = "Invalid input for transaction.";
             }
             return RedirectToAction("Index");
-        }
-
-        private List<SelectListItem> GetCategoriesDropdown()
-        {
-            var selectListCategories = new List<SelectListItem>();
-            var categories = _repository.GetCategories().Where(c => c.Type == CategoryType.Sub);
-            if (categories.Any())
-            {
-                foreach (var category in categories)
-                {
-                    selectListCategories.Add(new SelectListItem() { Text = category.Name, Value = category.Name });
-                }
-            }
-
-            return selectListCategories;
-        }
-
-        private List<SelectListItem> GetAccountsDropdown()
-        {
-            var selectListCategories = new List<SelectListItem>();
-            var accounts = _repository.GetAccounts();
-            if (accounts.Any())
-            {
-                foreach (var account in accounts)
-                {
-                    selectListCategories.Add(new SelectListItem() { Text = account.Name, Value = account.Name });
-                }
-            }
-
-            return selectListCategories;
         }
     }
 }

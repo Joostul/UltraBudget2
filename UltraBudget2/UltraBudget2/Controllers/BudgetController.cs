@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+using UltraBudget2.Extensions;
+using UltraBudget2.Models;
 using UltraBudget2.Repositories;
 
 namespace UltraBudget2.Controllers
@@ -17,6 +17,9 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Index()
         {
+            TempData["Categories"] = _repository.GetSubCategoriesDropdown();
+            TempData["Accounts"] = _repository.GetAccountsDropdown();
+            TempData["MasterCategories"] = _repository.GetCategories();
             return View();
         }
     }
