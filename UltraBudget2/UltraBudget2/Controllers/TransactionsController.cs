@@ -53,7 +53,10 @@ namespace UltraBudget2.Controllers
                 transaction.Id = Guid.NewGuid();
                 _repository.UpsertTransaction(transaction);
             }
-            TempData["ErrorMessage"] = "Invalid input for transaction.";
+            else
+            {
+                TempData["ErrorMessage"] = "Invalid input for transaction.";
+            }
             return RedirectToAction("Index");
         }
 
@@ -71,9 +74,13 @@ namespace UltraBudget2.Controllers
             {
                 _repository.UpsertTransaction(transaction);
             }
+            else
+            {
+                TempData["ErrorMessage"] = "Invalid input for transaction.";
+            }
             return RedirectToAction("Index");
-        }      
-        
+        }
+
         private List<SelectListItem> GetCategoriesDropdown()
         {
             var selectListCategories = new List<SelectListItem>();
