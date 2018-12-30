@@ -85,7 +85,7 @@ namespace UltraBudget2.Controllers
         private List<SelectListItem> GetCategoriesDropdown()
         {
             var selectListCategories = new List<SelectListItem>();
-            var categories = _repository.GetCategories();
+            var categories = _repository.GetCategories().Where(c => c.Type == CategoryType.Sub);
             if (categories.Any())
             {
                 foreach (var category in categories)
