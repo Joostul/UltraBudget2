@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using UltraBudget2.Extensions;
+using UltraBudget2.Helpers;
 using UltraBudget2.Models;
 using UltraBudget2.Repositories;
 
@@ -61,6 +63,25 @@ namespace UltraBudget2.Controllers
         public IActionResult Import()
         {
             return View();
+        }
+
+        public IActionResult Example()
+        {
+            var budget = DemoHelper.GenerateDemoBudget();
+            foreach (var account in budget.Accounts)
+            {
+                _repository.UpsertAccount(account);
+            }
+            foreach (var category in budget.Categories)
+            {
+                _repository.UpsertCategory(category);
+            }
+            foreach (var transaction in budget.Transactions)
+            {
+                _repository.UpsertTransaction(transaction);
+            }
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]

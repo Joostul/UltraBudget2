@@ -70,7 +70,7 @@ namespace UltraBudget2.Repositories
                 return new List<Transaction>();
             }
 
-            return transactions;
+            return transactions.OrderByDescending(t => t.DateTime);
         }
 
         public Transaction GetTransaction(Guid id)
