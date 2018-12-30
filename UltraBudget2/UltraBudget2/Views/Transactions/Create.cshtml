@@ -2,7 +2,8 @@
 
 @{
     ViewData["Title"] = "Create";
-    var categorySelectList = (List<SelectListItem>)ViewData["Categories"];
+    var categorySelectList = (List<SelectListItem>)TempData["Categories"];
+    var accountSelectList = (List<SelectListItem>)TempData["Accounts"];
 }
 
 <h2>Create</h2>
@@ -32,6 +33,11 @@
                 <label asp-for="Payee" class="control-label"></label>
                 <input asp-for="Payee" class="form-control" />
                 <span asp-validation-for="Payee" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Account" class="control-label"></label>
+                <select asp-for="Account" asp-items="accountSelectList" class="form-control"></select>
+                <span asp-validation-for="Account" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />

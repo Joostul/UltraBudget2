@@ -32,7 +32,16 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                     <li><a asp-area="" asp-controller="Transactions" asp-action="Index">Transactions</a></li>
                     <li><a asp-area="" asp-controller="Categories" asp-action="Index">Categories</a></li>
+                    <li><a asp-area="" asp-controller="Accounts" asp-action="Index">Accounts</a></li>
                 </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a asp-controller="Home" asp-action="Export">Export</a></li>
+                </ul>
+                @* Not working, no idea why... *@
+                @*<form enctype="multipart/form-data" asp-controller="Home" asp-action="Index" method="post" class="nav navbar-nav navbar-right">
+                    <input id="files" type="file" name="file" />
+                    <input type="submit" value="Import" />
+                </form>*@
             </div>
         </div>
     </nav>

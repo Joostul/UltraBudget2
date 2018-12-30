@@ -13,6 +13,7 @@ namespace UltraBudget2.Repositories
         private ISession _session => _httpContextAccessor.HttpContext.Session;
         private const string _transactionsSessionKey = "transactions";
         private const string _categoriesSessionKey = "categories";
+        private const string _accountsSessionKey = "Accounts";
 
         public HttpSessionBudgetRepository(IHttpContextAccessor httpContextAccessor)
         {
@@ -64,6 +65,11 @@ namespace UltraBudget2.Repositories
         {
             var transactions = _session.Get<List<Transaction>>(_transactionsSessionKey);
 
+            if(transactions == null)
+            {
+                return new List<Transaction>();
+            }
+
             return transactions;
         }
 
@@ -72,10 +78,23 @@ namespace UltraBudget2.Repositories
             return GetTransactions().SingleOrDefault(t => t.Id == id);
         }
 
+        public void SetTransactions(IEnumerable<Transaction> transactions)
+        {
+            foreach (var transaction in transactions)
+            {
+                UpsertTransaction(transaction);
+            }
+        }
+
         // Categories
         public IEnumerable<Category> GetCategories()
         {
             var categories = _session.Get<List<Category>>(_categoriesSessionKey);
+
+            if(categories == null)
+            {
+                return new List<Category>();
+            }
 
             return categories;
         }
@@ -119,6 +138,85 @@ namespace UltraBudget2.Repositories
                 var existingCategoryIndex = categories.IndexOf(existingCategory) + 1;
                 categories.RemoveAt(existingCategoryIndex);
                 _session.Set(_categoriesSessionKey, categories);
+            }
+        }
+
+        public void SetCategories(IEnumerable<Category> categories)
+        {
+            foreach (var category in categories)
+            {
+                UpsertCategory(category);
+            }
+        }
+
+        // Import/export dao
+        public BudgetDao Export()
+        {
+            return new BudgetDao()
+            {
+                Categories = GetCategories(),
+                Transactions = GetTransactions(),
+                Accounts = GetAccounts()
+            };
+        }
+
+        public void Import(BudgetDao budget)
+        {
+            throw new NotImplementedException();
+        }
+
+        // Accounts
+        public IEnumerable<Account> GetAccounts()
+        {
+            var accounts = _session.Get<List<Account>>(_accountsSessionKey);
+
+            if(accounts == null)
+            {
+                return new List<Account>();
+            }
+
+            return accounts;
+        }
+
+        public Account GetAccount(Guid id)
+        {
+            return GetAccounts().SingleOrDefault(c => c.Id == id);
+        }
+
+        public void UpsertAccount(Account account)
+        {
+            var accounts = GetAccounts() == null ? new List<Account>() : GetAccounts().ToList();
+
+            if (!accounts.Any(t => t.Id == account.Id))
+            {
+                accounts.Add(account);
+            }
+            else
+            {
+                var existingAccount = accounts.SingleOrDefault(t => t.Id == account.Id);
+                var updatedAccount = new Account()
+                {
+                    Id = existingAccount.Id,
+                    Name = string.IsNullOrWhiteSpace(account.Name) ? existingAccount.Name : account.Name
+                };
+
+                accounts.Remove(existingAccount);
+                accounts.Add(updatedAccount);
+            }
+
+            _session.Set(_accountsSessionKey, accounts);
+        }
+
+        public void DeleteAccount(Guid id)
+        {
+            var existingAccount = GetAccount(id);
+
+            if (existingAccount != null)
+            {
+                var accounts = GetAccounts().ToList();
+                var existingAccountIndex = accounts.IndexOf(existingAccount) + 1;
+                accounts.RemoveAt(existingAccountIndex);
+                _session.Set(_accountsSessionKey, accounts);
             }
         }
     }

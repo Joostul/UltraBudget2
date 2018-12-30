@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UltraBudget2.Models;
 using UltraBudget2.Repositories;
 
@@ -18,13 +19,16 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Index()
         {
+            // TODO: Maybe can be in constructor?
+            TempData["Categories"] = GetCategoriesDropdown();
+            TempData["Accounts"] = GetAccountsDropdown();
             return View(_repository.GetTransactions());
         }
 
         public IActionResult Create()
         {
-            ViewData["Categories"] = GetCategoriesDropDown();
-
+            TempData["Categories"] = GetCategoriesDropdown();
+            TempData["Accounts"] = GetAccountsDropdown();
             return View();
         }
 
@@ -36,7 +40,8 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Edit(string id)
         {
-            ViewData["Categories"] = GetCategoriesDropDown();
+            TempData["Categories"] = GetCategoriesDropdown();
+            TempData["Accounts"] = GetAccountsDropdown();
             var existingTransaction = _repository.GetTransaction(Guid.Parse(id));
             return View(existingTransaction);
         }
@@ -44,8 +49,15 @@ namespace UltraBudget2.Controllers
         [HttpPost]
         public IActionResult Create([FromForm] Transaction transaction)
         {
-            transaction.Id = Guid.NewGuid();
-            _repository.UpsertTransaction(transaction);
+            if (ModelState.IsValid)
+            {
+                transaction.Id = Guid.NewGuid();
+                _repository.UpsertTransaction(transaction);
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Invalid input for transaction.";
+            }
             return RedirectToAction("Index");
         }
 
@@ -59,19 +71,41 @@ namespace UltraBudget2.Controllers
         [HttpPost]
         public IActionResult Edit([FromForm] Transaction transaction)
         {
-            _repository.UpsertTransaction(transaction);
+            if (ModelState.IsValid)
+            {
+                _repository.UpsertTransaction(transaction);
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Invalid input for transaction.";
+            }
             return RedirectToAction("Index");
-        }      
-        
-        private List<SelectListItem> GetCategoriesDropDown()
+        }
+
+        private List<SelectListItem> GetCategoriesDropdown()
         {
             var selectListCategories = new List<SelectListItem>();
-            var categories = _repository.GetCategories();
-            if (categories != null)
+            var categories = _repository.GetCategories().Where(c => c.Type == CategoryType.Sub);
+            if (categories.Any())
             {
                 foreach (var category in categories)
                 {
                     selectListCategories.Add(new SelectListItem() { Text = category.Name, Value = category.Name });
+                }
+            }
+
+            return selectListCategories;
+        }
+
+        private List<SelectListItem> GetAccountsDropdown()
+        {
+            var selectListCategories = new List<SelectListItem>();
+            var accounts = _repository.GetAccounts();
+            if (accounts.Any())
+            {
+                foreach (var account in accounts)
+                {
+                    selectListCategories.Add(new SelectListItem() { Text = account.Name, Value = account.Name });
                 }
             }
 

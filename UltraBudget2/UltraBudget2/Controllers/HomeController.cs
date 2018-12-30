@@ -1,5 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using UltraBudget2.Extensions;
 using UltraBudget2.Models;
 using UltraBudget2.Repositories;
 
@@ -21,14 +27,14 @@ namespace UltraBudget2.Controllers
 
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
+            ViewData["Message"] = "Description for UltraBudget.";
 
             return View();
         }
 
         public IActionResult Contact()
         {
-            ViewData["Message"] = "Your contact page.";
+            ViewData["Message"] = "Contact page.";
 
             return View();
         }
@@ -42,6 +48,41 @@ namespace UltraBudget2.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult Export()
+        {
+            var fileName = $"UltraBudget_{DateTime.Now.ToShortDateString()}.txt"; // TODO: set as budget name
+            var budget = _repository.Export();
+            byte[] file = budget.ToByteArray();
+            return File(file, "text/plain", fileName);
+        }
+
+        public IActionResult Import()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Import(IFormFile file)
+        {
+            BudgetDao budget = null;
+
+            try
+            {
+                using (var reader = new StreamReader(file.OpenReadStream()))
+                {
+                    budget = JsonConvert.DeserializeObject<BudgetDao>(reader.ReadToEnd());
+                    _repository.Import(budget);
+                }
+            }
+            catch (Exception)
+            {
+                //ViewBag.Message = "Not a valid budget file.";
+                return View();
+            }
+
+            return View();
         }
     }
 }

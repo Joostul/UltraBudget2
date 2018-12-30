@@ -55,6 +55,7 @@ namespace UltraBudget2.Controllers
         public IActionResult Edit([FromForm] Category category)
         {
             _repository.UpsertCategory(category);
+            // TODO: update all transactions in this category
             return RedirectToAction("Index");
         }
     }
