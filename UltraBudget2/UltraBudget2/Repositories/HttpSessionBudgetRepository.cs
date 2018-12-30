@@ -65,6 +65,11 @@ namespace UltraBudget2.Repositories
         {
             var transactions = _session.Get<List<Transaction>>(_transactionsSessionKey);
 
+            if(transactions == null)
+            {
+                return new List<Transaction>();
+            }
+
             return transactions;
         }
 
@@ -85,6 +90,11 @@ namespace UltraBudget2.Repositories
         public IEnumerable<Category> GetCategories()
         {
             var categories = _session.Get<List<Category>>(_categoriesSessionKey);
+
+            if(categories == null)
+            {
+                return new List<Category>();
+            }
 
             return categories;
         }
@@ -159,6 +169,11 @@ namespace UltraBudget2.Repositories
         public IEnumerable<Account> GetAccounts()
         {
             var accounts = _session.Get<List<Account>>(_accountsSessionKey);
+
+            if(accounts == null)
+            {
+                return new List<Account>();
+            }
 
             return accounts;
         }

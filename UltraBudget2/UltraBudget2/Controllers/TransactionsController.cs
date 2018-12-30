@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UltraBudget2.Models;
 using UltraBudget2.Repositories;
 
@@ -85,7 +86,7 @@ namespace UltraBudget2.Controllers
         {
             var selectListCategories = new List<SelectListItem>();
             var categories = _repository.GetCategories();
-            if (categories != null)
+            if (categories.Any())
             {
                 foreach (var category in categories)
                 {
@@ -100,7 +101,7 @@ namespace UltraBudget2.Controllers
         {
             var selectListCategories = new List<SelectListItem>();
             var accounts = _repository.GetAccounts();
-            if (accounts != null)
+            if (accounts.Any())
             {
                 foreach (var account in accounts)
                 {

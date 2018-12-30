@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using UltraBudget2.Models;
 using UltraBudget2.Repositories;
 
@@ -16,7 +17,16 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Index()
         {
-            return View(_repository.GetAccounts());
+            var accounts = _repository.GetAccounts();
+            if (accounts.Any())
+            {
+                foreach (var account in accounts)
+                {
+                    account.Balance = _repository.GetTransactions().Where(t => t.Account == account.Name).Sum(t => t.Amount);
+                }
+            }
+
+            return View(accounts);
         }
 
         public IActionResult Create()
@@ -56,6 +66,7 @@ namespace UltraBudget2.Controllers
         public IActionResult Edit([FromForm] Account account)
         {
             _repository.UpsertAccount(account);
+            // TODO: update all transactions in this account
             return RedirectToAction("Index");
         }
     }

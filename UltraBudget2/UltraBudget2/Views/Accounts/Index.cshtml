@@ -16,6 +16,9 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Balance)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Type)
             </th>
             <th></th>
@@ -28,6 +31,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
         }
         else
@@ -37,6 +41,9 @@
                 <tr>
                     <td>
                         @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Balance)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Type)
