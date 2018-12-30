@@ -2,9 +2,17 @@
 
 @{
     ViewData["Title"] = "Index";
+    var errorMessage = (string)TempData["ErrorMessage"];
 }
 
 <h2>Transactions</h2>
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-primary" role="alert">
+        errorMessage
+    </div>
+}
 
 <p>
     <a asp-action="Create">Create New</a>

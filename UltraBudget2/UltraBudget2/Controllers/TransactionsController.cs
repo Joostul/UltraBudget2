@@ -48,8 +48,12 @@ namespace UltraBudget2.Controllers
         [HttpPost]
         public IActionResult Create([FromForm] Transaction transaction)
         {
-            transaction.Id = Guid.NewGuid();
-            _repository.UpsertTransaction(transaction);
+            if (ModelState.IsValid)
+            {
+                transaction.Id = Guid.NewGuid();
+                _repository.UpsertTransaction(transaction);
+            }
+            TempData["ErrorMessage"] = "Invalid input for transaction.";
             return RedirectToAction("Index");
         }
 
@@ -63,7 +67,10 @@ namespace UltraBudget2.Controllers
         [HttpPost]
         public IActionResult Edit([FromForm] Transaction transaction)
         {
-            _repository.UpsertTransaction(transaction);
+            if (ModelState.IsValid)
+            {
+                _repository.UpsertTransaction(transaction);
+            }
             return RedirectToAction("Index");
         }      
         

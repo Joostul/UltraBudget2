@@ -2,8 +2,8 @@
 
 @{
     ViewData["Title"] = "Edit";
-    var categorySelectList = (List<SelectListItem>)ViewData["Categories"];
-    var accountSelectList = (List<SelectListItem>)ViewData["Accounts"];
+    var categorySelectList = (List<SelectListItem>)TempData["Categories"];
+    var accountSelectList = (List<SelectListItem>)TempData["Accounts"];
 }
 
 <h2>Edit</h2>

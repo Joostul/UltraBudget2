@@ -10,14 +10,15 @@
     var accountSelectList = (List<SelectListItem>)TempData["Accounts"];
 }
 
-<form asp-action="Create">
+<form asp-action="Create" asp-controller="Transactions">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <tr>
         <td>
             <input asp-for="Amount" class="form-control" />
             <span asp-validation-for="Amount" class="text-danger"></span>
         </td>
         <td>
-            <input asp-for="DateTime" class="form-control" />
+            <input asp-for="DateTime" class="form-control" value="@DateTime.Now"/>
             <span asp-validation-for="DateTime" class="text-danger"></span>
         </td>
         <td>
