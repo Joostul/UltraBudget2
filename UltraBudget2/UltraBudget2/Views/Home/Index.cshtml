@@ -1,67 +1,140 @@
 ﻿@model IEnumerable<UltraBudget2.Models.Transaction>
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Budget";
+    var categorySelectList = (List<SelectListItem>)TempData["Categories"];
+    var accountSelectList = (List<SelectListItem>)TempData["Accounts"];
+    var masterCategories = (List<MasterCategory>)TempData["MasterCategories"];
+    var budget = (BudgetDao)TempData["Budget"];
 }
 
-<h2>Home</h2>
-
-<p>
-    <a asp-action="Example">Generate Example Data</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Amount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Payee)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @await Html.PartialAsync("~/Views/Transactions/_Create.cshtml", new Transaction())
-        @if (Model == null)
+<div id="main-view" style="height:100%; border: dashed grey; border-width:0px 1px 0px 1px;">
+    <div id="months-view" style="display:flex; flex-flow:row wrap; border: solid grey; min-height:15%;">
+        <div style="display:flex; border: solid grey; flex-grow:1; width:25%;">
+        </div>
+        <div style="display:flex; border: solid grey; flex-grow:1; width:25%">
+            <p>
+                January 2019 <br />
+                Not spent in January <br />
+                Overspent in January <br />
+                Income for January <br />
+                Budgeted for January <br />
+                0 <br />
+                Available to budget <br />
+            </p>
+        </div>
+        <div style="display:flex; border: solid grey; flex-grow:1; width:25%">
+            <p>
+                January 2019 <br />
+                Not spent in January <br />
+                Overspent in January <br />
+                Income for January <br />
+                Budgeted for January <br />
+                0 <br />
+                Available to budget <br />
+            </p>
+        </div>
+        <div style="display:flex; border: solid grey; flex-grow:1; width:25%">
+            <p>
+                January 2019 <br />
+                Not spent in January <br />
+                Overspent in January <br />
+                Income for January <br />
+                Budgeted for January <br />
+                0 <br />
+                Available to budget <br />
+            </p>
+        </div>
+        <div style="display:flex; flex-flow:row; flex:0 1 100%; max-height:25%;">
+            <div style="display:flex; flex-flow:column; border: solid grey; border-width: 1px 0px 0px 0px; flex-grow:1; width:25%">
+                <a asp-controller="Categories" asp-action="CreateMasterCategory">Create new Master Category</a>
+            </div>
+            <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+            </div>
+            <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+            </div>
+            <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="budget-view" style="display:flex; flex-flow: row wrap;">
+        @foreach (var category in masterCategories)
         {
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-        }
-        else
-        {
-            foreach (var item in Model)
+            <div style="display:flex; flex-flow: row wrap; background-color: lightsteelblue; flex-grow:1; width:25%;">
+                @category.Name
+            </div>
+            <div style="display:flex; flex-flow: row wrap; background-color: lightsteelblue; flex-grow:1; width:25%;">
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+            </div>
+            <div style="display:flex; flex-flow: row wrap; background-color: lightsteelblue; flex-grow:1; width:25%;">
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+            </div>
+            <div style="display:flex; flex-flow: row wrap; background-color: lightsteelblue; flex-grow:1; width:25%;">
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+                <div style="display:flex; border: solid grey; flex-grow:1;">
+                </div>
+            </div>
+            @foreach (var subCategory in category.SubCategories)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Amount)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.DateTime)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Category)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Payee)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Edit", "Edit", "Transactions", new { id = item.Id }) |
-                        @Html.ActionLink("Delete", "Delete", "Transactions", new { id = item.Id })
-                    </td>
-                </tr>
+                <div style="display:flex; flex-grow:1; width:25%;">
+                    @subCategory.Name
+                </div>
+                <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
+                    <div style="display:flex; border: solid grey; flex-grow:1;">
+                    </div>
+                    <div style="display:flex; border: solid grey; flex-grow:1;">
+                    </div>
+                    <div style="display:flex; border: solid grey; flex-grow:1;">
+                    </div>
+                </div>
+                <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
+                    <div style="display:flex; border: solid grey; flex-grow:1;">
+                    </div>
+                    <div style="display:flex; border: solid grey; flex-grow:1;">
+                    </div>
+                    <div style="display:flex; border: solid grey; flex-grow:1;">
+                    </div>
+                </div>
+                <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
+                    <div style="display:flex; border: solid grey; flex-grow:1;">
+                    </div>
+                    <div style="display:flex; border: solid grey; flex-grow:1;">
+                    </div>
+                    <div style="display:flex; border: solid grey; flex-grow:1;">
+                    </div>
+                </div>
             }
         }
-    </tbody>
-</table>
+    </div>
+</div>

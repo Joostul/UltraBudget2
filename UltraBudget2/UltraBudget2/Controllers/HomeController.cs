@@ -24,7 +24,11 @@ namespace UltraBudget2.Controllers
 
         public IActionResult Index()
         {
-            return View(_repository.GetTransactions());
+            TempData["Categories"] = _repository.GetSubCategoriesDropdown();
+            TempData["Accounts"] = _repository.GetAccountsDropdown();
+            TempData["MasterCategories"] = _repository.GetCategories();
+            TempData["Budget"] = _repository.Export();
+            return View();
         }
 
         public IActionResult About()
