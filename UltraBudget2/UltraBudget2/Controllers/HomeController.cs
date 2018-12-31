@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -27,8 +26,7 @@ namespace UltraBudget2.Controllers
             TempData["Categories"] = _repository.GetSubCategoriesDropdown();
             TempData["Accounts"] = _repository.GetAccountsDropdown();
             TempData["MasterCategories"] = _repository.GetCategories();
-            TempData["Budget"] = _repository.Export();
-            return View();
+            return View(_repository.Export());
         }
 
         public IActionResult About()

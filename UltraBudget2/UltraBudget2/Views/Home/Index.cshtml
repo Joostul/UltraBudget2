@@ -1,78 +1,72 @@
-﻿@model IEnumerable<UltraBudget2.Models.Transaction>
+﻿@model UltraBudget2.Models.BudgetDao;
+@using UltraBudget2.Extensions;
 
 @{
     ViewData["Title"] = "Budget";
     var categorySelectList = (List<SelectListItem>)TempData["Categories"];
     var accountSelectList = (List<SelectListItem>)TempData["Accounts"];
     var masterCategories = (List<MasterCategory>)TempData["MasterCategories"];
-    var budget = (BudgetDao)TempData["Budget"];
+    var subCategories = masterCategories.SelectMany(s => s.SubCategories);
+    var budgets = subCategories.SelectMany(s => s.Budgets);
+    var amountMonths = 3;
+
+    // TODO: redesign so that they are each seperate columns and I only have to have one for loop
 }
 
 <div id="main-view" style="height:100%; border: dashed grey; border-width:0px 1px 0px 1px;">
     <div id="months-view" style="display:flex; flex-flow:row wrap; border: solid grey; min-height:15%;">
         <div style="display:flex; border: solid grey; flex-grow:1; width:25%;">
         </div>
-        <div style="display:flex; border: solid grey; flex-grow:1; width:25%">
-            <p>
-                January 2019 <br />
-                Not spent in January <br />
-                Overspent in January <br />
-                Income for January <br />
-                Budgeted for January <br />
-                0 <br />
-                Available to budget <br />
-            </p>
-        </div>
-        <div style="display:flex; border: solid grey; flex-grow:1; width:25%">
-            <p>
-                January 2019 <br />
-                Not spent in January <br />
-                Overspent in January <br />
-                Income for January <br />
-                Budgeted for January <br />
-                0 <br />
-                Available to budget <br />
-            </p>
-        </div>
-        <div style="display:flex; border: solid grey; flex-grow:1; width:25%">
-            <p>
-                January 2019 <br />
-                Not spent in January <br />
-                Overspent in January <br />
-                Income for January <br />
-                Budgeted for January <br />
-                0 <br />
-                Available to budget <br />
-            </p>
-        </div>
+        @for (int i = 0; i < amountMonths; i++)
+        {
+            var thisMonth = DateTime.Now;
+            var activeMonthDateTime = thisMonth.AddMonths(i).GetFirstDayOfMonth();
+            var activeMonthName = activeMonthDateTime.ToString("MMMM");
+            <div style="display:flex; border: solid grey; flex-grow:1; width:25%">
+                <p>
+                    @activeMonthName @activeMonthDateTime.Year <br />
+                    Not spent in @activeMonthName <br />
+                    Overspent in @activeMonthName <br />
+                    Income for @activeMonthName <br />
+                    Budgeted for @activeMonthName <br />
+                    0 <br />
+                    Available to budget <br />
+                </p>
+            </div>
+        }
         <div style="display:flex; flex-flow:row; flex:0 1 100%; max-height:25%;">
-            <div style="display:flex; flex-flow:column; border: solid grey; border-width: 1px 0px 0px 0px; flex-grow:1; width:25%">
+            <div style="display:flex; flex-flow:column; flex-grow:1; width:25%">
                 <a asp-controller="Categories" asp-action="CreateMasterCategory">Create new Master Category</a>
             </div>
-            <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
-                <div style="display:flex; border: solid grey; flex-grow:1;">
+            @for (int i = 0; i < amountMonths; i++)
+            {
+                var thisMonth = DateTime.Now;
+                var activeMonthDateTime = thisMonth.AddMonths(i).GetFirstDayOfMonth();
+                var thisMonthBudgets = budgets.Where(b => b.Month == activeMonthDateTime);
+                var thisMonthBudget = thisMonthBudgets == null ? thisMonthBudgets.Sum(s => s.Balance) : 0 ;
+                var thisMonthOutflows = Model.Transactions.Where(t => t.DateTime.Year + t.DateTime.Month == activeMonthDateTime.Year + activeMonthDateTime.Month).Sum(s => s.Amount);
+                var thisMonthBalance = thisMonthBudget - thisMonthOutflows;
+                <div style="display:flex; flex-flow: row wrap; flex-grow:1; border: solid grey; border-width: 0px 1px 0px 1px; width:25%;">
+                    <div style="display:flex; flex-grow:1;">
+                        <p>
+                            Budgeted <br />
+                            @thisMonthBudget <br />
+                        </p>
+                    </div>
+                    <div style="display:flex; flex-grow:1;">
+                        <p>
+                            Outflows <br />
+                            @thisMonthOutflows <br />
+                        </p>
+                    </div>
+                    <div style="display:flex; flex-grow:1;">
+                        <p>
+                            Balance <br />
+                            @thisMonthBalance <br />
+                        </p>
+                    </div>
                 </div>
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-            </div>
-            <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-            </div>
-            <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-            </div>
+            }
         </div>
     </div>
     <div id="budget-view" style="display:flex; flex-flow: row wrap;">
@@ -81,59 +75,33 @@
             <div style="display:flex; flex-flow: row wrap; background-color: lightsteelblue; flex-grow:1; width:25%;">
                 @category.Name
             </div>
-            <div style="display:flex; flex-flow: row wrap; background-color: lightsteelblue; flex-grow:1; width:25%;">
-                <div style="display:flex; border: solid grey; flex-grow:1;">
+            for (int i = 0; i < amountMonths; i++)
+            {
+                <div style="display:flex; flex-flow: row wrap; background-color: lightsteelblue; flex-grow:1; width:25%;">
+                    <div style="display:flex; border: solid grey; flex-grow:1;">
+                    </div>
+                    <div style="display:flex; border: solid grey; flex-grow:1;">
+                    </div>
+                    <div style="display:flex; border: solid grey; flex-grow:1;">
+                    </div>
                 </div>
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-            </div>
-            <div style="display:flex; flex-flow: row wrap; background-color: lightsteelblue; flex-grow:1; width:25%;">
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-            </div>
-            <div style="display:flex; flex-flow: row wrap; background-color: lightsteelblue; flex-grow:1; width:25%;">
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-                <div style="display:flex; border: solid grey; flex-grow:1;">
-                </div>
-            </div>
+            }
             @foreach (var subCategory in category.SubCategories)
             {
                 <div style="display:flex; flex-grow:1; width:25%;">
                     @subCategory.Name
                 </div>
-                <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
-                    <div style="display:flex; border: solid grey; flex-grow:1;">
+                for (int i = 0; i < amountMonths; i++)
+                {
+                    <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
+                        <div style="display:flex; border: solid grey; flex-grow:1;">
+                        </div>
+                        <div style="display:flex; border: solid grey; flex-grow:1;">
+                        </div>
+                        <div style="display:flex; border: solid grey; flex-grow:1;">
+                        </div>
                     </div>
-                    <div style="display:flex; border: solid grey; flex-grow:1;">
-                    </div>
-                    <div style="display:flex; border: solid grey; flex-grow:1;">
-                    </div>
-                </div>
-                <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
-                    <div style="display:flex; border: solid grey; flex-grow:1;">
-                    </div>
-                    <div style="display:flex; border: solid grey; flex-grow:1;">
-                    </div>
-                    <div style="display:flex; border: solid grey; flex-grow:1;">
-                    </div>
-                </div>
-                <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
-                    <div style="display:flex; border: solid grey; flex-grow:1;">
-                    </div>
-                    <div style="display:flex; border: solid grey; flex-grow:1;">
-                    </div>
-                    <div style="display:flex; border: solid grey; flex-grow:1;">
-                    </div>
-                </div>
+                }
             }
         }
     </div>
