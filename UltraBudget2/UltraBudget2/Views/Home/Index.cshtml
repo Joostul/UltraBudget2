@@ -9,20 +9,19 @@
     var subCategories = masterCategories.SelectMany(s => s.SubCategories);
     var budgets = subCategories.SelectMany(s => s.Budgets);
     var amountMonths = 3;
-
-    // TODO: redesign so that they are each seperate columns and I only have to have one for loop
+    var rowWidthPercentage = 75 / amountMonths;
 }
 
-<div id="main-view" style="height:100%; border: dashed grey; border-width:0px 1px 0px 1px;">
-    <div id="months-view" style="display:flex; flex-flow:row wrap; border: solid grey; min-height:15%;">
-        <div style="display:flex; border: solid grey; flex-grow:1; width:25%;">
+<div id="wrapper" style="height: 100%; display: flex; flex-flow: column wrap; width: 100%; border: dashed grey;">
+    <div id="header" style="display: flex; flex-flow: row wrap; border: dashed red; width: 100%; height: 20%;">
+        <div style="border: 1px solid grey; width: 25%;">
         </div>
         @for (int i = 0; i < amountMonths; i++)
         {
             var thisMonth = DateTime.Now;
             var activeMonthDateTime = thisMonth.AddMonths(i).GetFirstDayOfMonth();
             var activeMonthName = activeMonthDateTime.ToString("MMMM");
-            <div style="display:flex; border: solid grey; flex-grow:1; width:25%">
+            <div style="border: 1px solid grey; width: 25%;">
                 <p>
                     @activeMonthName @activeMonthDateTime.Year <br />
                     Not spent in @activeMonthName <br />
@@ -34,75 +33,86 @@
                 </p>
             </div>
         }
-        <div style="display:flex; flex-flow:row; flex:0 1 100%; max-height:25%;">
-            <div style="display:flex; flex-flow:column; flex-grow:1; width:25%">
-                <a asp-controller="Categories" asp-action="CreateMasterCategory">Create new Master Category</a>
-            </div>
-            @for (int i = 0; i < amountMonths; i++)
-            {
-                var thisMonth = DateTime.Now;
-                var activeMonthDateTime = thisMonth.AddMonths(i).GetFirstDayOfMonth();
-                var thisMonthBudgets = budgets.Where(b => b.Month == activeMonthDateTime);
-                var thisMonthBudget = thisMonthBudgets == null ? thisMonthBudgets.Sum(s => s.Balance) : 0 ;
-                var thisMonthOutflows = Model.Transactions.Where(t => t.DateTime.Year + t.DateTime.Month == activeMonthDateTime.Year + activeMonthDateTime.Month).Sum(s => s.Amount);
-                var thisMonthBalance = thisMonthBudget - thisMonthOutflows;
-                <div style="display:flex; flex-flow: row wrap; flex-grow:1; border: solid grey; border-width: 0px 1px 0px 1px; width:25%;">
-                    <div style="display:flex; flex-grow:1;">
-                        <p>
-                            Budgeted <br />
-                            @thisMonthBudget <br />
-                        </p>
-                    </div>
-                    <div style="display:flex; flex-grow:1;">
-                        <p>
-                            Outflows <br />
-                            @thisMonthOutflows <br />
-                        </p>
-                    </div>
-                    <div style="display:flex; flex-grow:1;">
-                        <p>
-                            Balance <br />
-                            @thisMonthBalance <br />
-                        </p>
-                    </div>
-                </div>
-            }
+        <div style="border: 1px solid grey; width: 25%;">
         </div>
+        @for (int i = 0; i < amountMonths; i++)
+        {
+            var thisMonth = DateTime.Now;
+            var activeMonthDateTime = thisMonth.AddMonths(i).GetFirstDayOfMonth();
+            var thisMonthBudgets = budgets.Where(b => b.Month == activeMonthDateTime);
+            var thisMonthBudget = thisMonthBudgets == null ? thisMonthBudgets.Sum(s => s.Balance) : 0;
+            var thisMonthOutflows = Model.Transactions.Where(t => t.DateTime.Year + t.DateTime.Month == activeMonthDateTime.Year + activeMonthDateTime.Month).Sum(s => s.Amount);
+            var thisMonthBalance = thisMonthBudget - thisMonthOutflows;
+            <div style="display:flex; flex-flow: row wrap; border: 1px solid grey; width: 25%;">
+                <div style="flex-grow:1;">
+                    <p>
+                        Budgeted <br />
+                        @thisMonthBudget <br />
+                    </p>
+                </div>
+                <div style=" flex-grow:1;">
+                    <p>
+                        Outflows <br />
+                        @thisMonthOutflows <br />
+                    </p>
+                </div>
+                <div style="flex-grow:1;">
+                    <p>
+                        Balance <br />
+                        @thisMonthBalance <br />
+                    </p>
+                </div>
+            </div>
+        }
     </div>
-    <div id="budget-view" style="display:flex; flex-flow: row wrap;">
+    <div id="inputrows" style="display: flex; flex-flow: column; border: dashed yellow;">
         @foreach (var category in masterCategories)
         {
-            <div style="display:flex; flex-flow: row wrap; background-color: lightsteelblue; flex-grow:1; width:25%;">
-                @category.Name
-            </div>
-            for (int i = 0; i < amountMonths; i++)
-            {
-                <div style="display:flex; flex-flow: row wrap; background-color: lightsteelblue; flex-grow:1; width:25%;">
-                    <div style="display:flex; border: solid grey; flex-grow:1;">
-                    </div>
-                    <div style="display:flex; border: solid grey; flex-grow:1;">
-                    </div>
-                    <div style="display:flex; border: solid grey; flex-grow:1;">
-                    </div>
+            <div style="display: flex; flex-flow: row wrap; background-color: lightsteelblue;">
+                <div style="width: 25%;">
+                    @category.Name
                 </div>
-            }
-            @foreach (var subCategory in category.SubCategories)
-            {
-                <div style="display:flex; flex-grow:1; width:25%;">
-                    @subCategory.Name
-                </div>
-                for (int i = 0; i < amountMonths; i++)
+                @for (int i = 0; i < amountMonths; i++)
                 {
-                    <div style="display:flex; flex-flow: row wrap; flex-grow:1; width:25%;">
-                        <div style="display:flex; border: solid grey; flex-grow:1;">
-                        </div>
-                        <div style="display:flex; border: solid grey; flex-grow:1;">
-                        </div>
-                        <div style="display:flex; border: solid grey; flex-grow:1;">
-                        </div>
+                    <div style="border: 1px solid lightgrey; border-width: 0px 0px 0px 1px; width:25%;">
                     </div>
                 }
+            </div>
+            @foreach (var subCategory in category.SubCategories)
+            {
+                <div style="display: flex; flex-flow: row wrap; border: 1px solid lightgrey; border-width: 1px 0px 0px 0px;">
+                    <div style="width: 25%;">
+                        @subCategory.Name
+                    </div>
+                    @for (int i = 0; i < amountMonths; i++)
+                    {
+                        var thisMonth = DateTime.Now.AddMonths(i).GetFirstDayOfMonth();
+                        var id = subCategory.Name + '_' + thisMonth;
+
+                        <div style="display: flex; flex-flow: row; border: 1px solid lightgrey; border-width: 0px 0px 0px 1px; width:25%;">
+                            <div style="flex: 1 1 0;">
+                                <input id="@id " type="number" onchange="onBudgetInputChange(this)" />
+                            </div>
+
+                            <div style="flex: 1 1 0; border: 1px solid lightgrey; border-width: 0px 0px 0px 1px;">
+
+                            </div>
+
+                            <div style="flex: 1 1 0; border: 1px solid lightgrey; border-width: 0px 0px 0px 1px;">
+
+                            </div>
+
+                        </div>
+                    }
+                </div>
             }
         }
     </div>
 </div>
+
+<script>
+    function onBudgetInputChange(selectedInput) {
+        alert("value: " + selectedInput.value);
+        alert("id: " + selectedInput.id)
+    }
+</script>

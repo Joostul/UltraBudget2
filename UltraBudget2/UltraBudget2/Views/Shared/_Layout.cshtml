@@ -15,6 +15,12 @@
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
+    <style>
+        input {
+            box-sizing: border-box;
+            width:100%;
+        } 
+    </style>
 </head>
 <body style="height:100%">
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -35,7 +41,7 @@
                     <li><a asp-area="" asp-controller="Accounts" asp-action="Index">Accounts</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a asp-controller="Home" a asp-action="Example">Generate Example Data</a></li>
+                    <li><a asp-controller="Home" asp-action="Example">Generate Example Data</a></li>
                     <li><a asp-controller="Home" asp-action="Export">Export</a></li>
                 </ul>
                 @* Not working, no idea why... *@
