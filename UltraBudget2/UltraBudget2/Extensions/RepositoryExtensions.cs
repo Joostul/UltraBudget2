@@ -11,7 +11,7 @@ namespace UltraBudget2.Extensions
         public static List<SelectListItem> GetSubCategoriesDropdown(this IBudgetRepository repository)
         {
             var selectListCategories = new List<SelectListItem>();
-            var subCategories = repository.GetCategories().SelectMany(c => c.SubCategories);
+            var subCategories = repository.GetMasterCategories().SelectMany(c => c.SubCategories);
             if (subCategories.Any())
             {
                 foreach (var subCategory in subCategories)
@@ -26,7 +26,7 @@ namespace UltraBudget2.Extensions
         public static List<SelectListItem> GetMasterCategoriesDropdown(this IBudgetRepository repository)
         {
             var selectListCategories = new List<SelectListItem>();
-            var masterCategories = repository.GetCategories();
+            var masterCategories = repository.GetMasterCategories();
             if (masterCategories.Any())
             {
                 foreach (var mastesrCategory in masterCategories)

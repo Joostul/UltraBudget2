@@ -87,7 +87,7 @@ namespace UltraBudget2.Repositories
         }
 
         // Categories
-        public IEnumerable<MasterCategory> GetCategories()
+        public IEnumerable<MasterCategory> GetMasterCategories()
         {
             var categories = _session.Get<List<MasterCategory>>(_categoriesSessionKey);
 
@@ -99,14 +99,14 @@ namespace UltraBudget2.Repositories
             return categories;
         }
 
-        public MasterCategory GetCategory(Guid id)
+        public MasterCategory GetMasterCategory(Guid id)
         {
-            return GetCategories().SingleOrDefault(c => c.Id == id);
+            return GetMasterCategories().SingleOrDefault(c => c.Id == id);
         }
 
-        public void UpsertCategory(MasterCategory category)
+        public void UpsertMasterCategory(MasterCategory category)
         {
-            var categories = GetCategories() == null ? new List<MasterCategory>() : GetCategories().ToList();
+            var categories = GetMasterCategories() == null ? new List<MasterCategory>() : GetMasterCategories().ToList();
 
             if (!categories.Any(t => t.Id == category.Id))
             {
@@ -132,23 +132,71 @@ namespace UltraBudget2.Repositories
 
         public void DeleteCategory(Guid id)
         {
-            var existingCategory = GetCategory(id);
+            var existingCategory = GetMasterCategory(id);
 
             if (existingCategory != null)
             {
-                var categories = GetCategories().ToList();
+                var categories = GetMasterCategories().ToList();
                 var existingCategoryIndex = categories.IndexOf(existingCategory) + 1;
                 categories.RemoveAt(existingCategoryIndex);
                 _session.Set(_categoriesSessionKey, categories);
             }
         }
 
-        public void SetCategories(IEnumerable<MasterCategory> categories)
+        public void SetMasterCategories(IEnumerable<MasterCategory> categories)
         {
             foreach (var category in categories)
             {
-                UpsertCategory(category);
+                UpsertMasterCategory(category);
             }
+        }
+
+        public IEnumerable<SubCategory> GetSubCategoriesForMaster(Guid id)
+        {
+            return GetMasterCategory(id).SubCategories;
+        }
+
+        public SubCategory GetSubCategory(Guid id)
+        {
+            return GetSubCategories().SingleOrDefault(s => s.Id == id);
+        }
+
+        public void UpsertSubcategory(Guid mastercategoryId, SubCategory subCategory)
+        {
+            var mastercategory = GetMasterCategory(mastercategoryId);
+
+            if(mastercategory != null)
+            {
+                if (!mastercategory.SubCategories.Any(t => t.Name == subCategory.Name))
+                {
+                    mastercategory.SubCategories.Add(subCategory);
+                    UpsertMasterCategory(mastercategory);
+                }
+                else
+                {
+                    var existingSubcategory = mastercategory.SubCategories.SingleOrDefault(s => s.Name == subCategory.Name);
+                    var newBudgets = subCategory.Budgets.Except(existingSubcategory.Budgets);
+                    var updatedBudgets = existingSubcategory.Budgets;
+                    updatedBudgets.AddRange(newBudgets);
+
+                    var updatedSubcategory = new SubCategory()
+                    {
+                        Id = subCategory.Id,
+                        Name = subCategory.Name,
+                        Budgets = updatedBudgets,
+                        MasterCategory = existingSubcategory.MasterCategory
+                    };
+
+                    mastercategory.SubCategories.Remove(existingSubcategory);
+                    mastercategory.SubCategories.Add(updatedSubcategory);
+                    UpsertMasterCategory(mastercategory);
+                }
+            }
+        }
+
+        public IEnumerable<SubCategory> GetSubCategories()
+        {
+            return GetMasterCategories().SelectMany(m => m.SubCategories);
         }
 
         // Import/export dao
@@ -156,7 +204,7 @@ namespace UltraBudget2.Repositories
         {
             return new BudgetDao()
             {
-                Categories = GetCategories(),
+                Categories = GetMasterCategories(),
                 Transactions = GetTransactions(),
                 Accounts = GetAccounts()
             };
@@ -219,6 +267,29 @@ namespace UltraBudget2.Repositories
                 var existingAccountIndex = accounts.IndexOf(existingAccount) + 1;
                 accounts.RemoveAt(existingAccountIndex);
                 _session.Set(_accountsSessionKey, accounts);
+            }
+        }
+
+        // Budgets
+        public void UpsertBudget(Guid mastercategoryId, Guid subcategoryId, Budget budget)
+        {
+            var subcategory = GetSubCategory(subcategoryId);
+            if(!subcategory.Budgets.Any(b => b.Month == budget.Month))
+            {
+                subcategory.Budgets.Add(budget);
+                UpsertSubcategory(mastercategoryId, subcategory);
+            }
+            else
+            {
+                var existingBudget = subcategory.Budgets.SingleOrDefault(b => b.Month == budget.Month);
+                var updatedBudget = new Budget()
+                {
+                    Balance = budget.Balance,
+                    Month = budget.Month
+                };
+                subcategory.Budgets.Remove(existingBudget);
+                subcategory.Budgets.Add(updatedBudget);
+                UpsertSubcategory(mastercategoryId, subcategory);
             }
         }
     }

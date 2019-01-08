@@ -21,13 +21,16 @@
             var thisMonth = DateTime.Now;
             var activeMonthDateTime = thisMonth.AddMonths(i).GetFirstDayOfMonth();
             var activeMonthName = activeMonthDateTime.ToString("MMMM");
+            var budgetsThisMonth = budgets.Where(b => b.Month == activeMonthDateTime);
+            var budgeted = 0m;
+            //var budgeted = budgetsThisMonth != null ? 0m : budgetsThisMonth.Sum(b => b.Balance);
             <div style="border: 1px solid grey; width: 25%;">
                 <p>
                     @activeMonthName @activeMonthDateTime.Year <br />
                     Not spent in @activeMonthName <br />
                     Overspent in @activeMonthName <br />
                     Income for @activeMonthName <br />
-                    Budgeted for @activeMonthName <br />
+                    Budgeted for @activeMonthName: @budgeted <br />
                     0 <br />
                     Available to budget <br />
                 </p>
@@ -87,11 +90,13 @@
                     @for (int i = 0; i < amountMonths; i++)
                     {
                         var thisMonth = DateTime.Now.AddMonths(i).GetFirstDayOfMonth();
-                        var id = subCategory.Name + '_' + thisMonth;
+                        var id = category.Id.ToString() + '_' + subCategory.Id + '_' + thisMonth.ToString("yyyyMM");
+                        var budgetsThisMonth = budgets.Where(b => b.Month == thisMonth).ToList();
+                        var budgeted = budgetsThisMonth == null ? 0m : budgetsThisMonth.Sum(b => b.Balance);
 
                         <div style="display: flex; flex-flow: row; border: 1px solid lightgrey; border-width: 0px 0px 0px 1px; width:25%;">
                             <div style="flex: 1 1 0;">
-                                <input id="@id " type="number" onchange="onBudgetInputChange(this)" />
+                                <input id="@id" type="number" onchange="onBudgetInputChange(this)" placeholder="@budgeted" />
                             </div>
 
                             <div style="flex: 1 1 0; border: 1px solid lightgrey; border-width: 0px 0px 0px 1px;">
@@ -112,7 +117,11 @@
 
 <script>
     function onBudgetInputChange(selectedInput) {
-        alert("value: " + selectedInput.value);
-        alert("id: " + selectedInput.id)
+        var url = '/Home/UpdateBudget';
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: { id: selectedInput.id, value: selectedInput.value }
+        })
     }
 </script>

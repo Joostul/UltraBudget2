@@ -19,7 +19,7 @@ namespace UltraBudget2.Models
         {
             var budgets = GetSubCategories().SelectMany(s => s.Budgets);
 
-            if(budgets == null)
+            if (budgets == null)
             {
                 return new List<Budget>();
             }
@@ -31,7 +31,7 @@ namespace UltraBudget2.Models
         {
             var budgets = GetBudgets().Where(b => b.Month.Month + b.Month.Year == date.Month + date.Year);
 
-            if(budgets == null)
+            if (budgets == null)
             {
                 return new List<Budget>();
             }

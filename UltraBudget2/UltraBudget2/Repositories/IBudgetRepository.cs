@@ -14,14 +14,21 @@ namespace UltraBudget2.Repositories
         void UpsertTransaction(Transaction transaction);
         void DeleteTransaction(Guid id);
 
-        IEnumerable<MasterCategory> GetCategories();
-        MasterCategory GetCategory(Guid id);
-        void UpsertCategory(MasterCategory category);
+        IEnumerable<MasterCategory> GetMasterCategories();
+        MasterCategory GetMasterCategory(Guid id);
+        void UpsertMasterCategory(MasterCategory masterCategory);
         void DeleteCategory(Guid id);
+
+        IEnumerable<SubCategory> GetSubCategories();
+        IEnumerable<SubCategory> GetSubCategoriesForMaster(Guid id);
+        SubCategory GetSubCategory(Guid id);
+        void UpsertSubcategory(Guid mastercategoryId, SubCategory subCategory);
 
         IEnumerable<Account> GetAccounts();
         Account GetAccount(Guid id);
         void UpsertAccount(Account account);
         void DeleteAccount(Guid id);
+
+        void UpsertBudget(Guid mastercategoryId, Guid subcategoryId, Budget budget);
     }
 }

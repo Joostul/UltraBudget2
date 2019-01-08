@@ -40,13 +40,15 @@ namespace UltraBudget2.Helpers
                         {
                             Id = Guid.NewGuid(),
                             Name = "Subcategory11",
-                            MasterCategory = "MasterCategory1"
+                            MasterCategory = "MasterCategory1",
+                            Budgets = new List<Budget>()
                         },
                         new SubCategory()
                         {
                             Id = Guid.NewGuid(),
                             Name = "Subcategory12",
-                            MasterCategory = "MasterCategory1"
+                            MasterCategory = "MasterCategory1",
+                            Budgets = new List<Budget>()
                         }
                     }
                 },
@@ -60,19 +62,22 @@ namespace UltraBudget2.Helpers
                         {
                             Id = Guid.NewGuid(),
                             Name = "Subcategory21",
-                            MasterCategory = "MasterCategory2"
+                            MasterCategory = "MasterCategory2",
+                            Budgets = new List<Budget>()
                         },
                         new SubCategory()
                         {
                             Id = Guid.NewGuid(),
                             Name = "Subcategory22",
-                            MasterCategory = "MasterCategory2"
+                            MasterCategory = "MasterCategory2",
+                            Budgets = new List<Budget>()
                         },
                         new SubCategory()
                         {
                             Id = Guid.NewGuid(),
                             Name = "Subcategory23",
-                            MasterCategory = "MasterCategory2"
+                            MasterCategory = "MasterCategory2",
+                            Budgets = new List<Budget>()
                         }
                     }
                 }

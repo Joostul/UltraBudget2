@@ -8,5 +8,13 @@ namespace UltraBudget2.Extensions
         {
             return new DateTime(value.Year, value.Month, value.Day);
         }
+
+        public static DateTime BudgetIdToDatetime(string id)
+        {
+            var year = int.Parse(id.Substring(id.Length - 6, 4));
+            var month = int.Parse(id.Substring(id.Length - 2));
+
+            return new DateTime(year, month, 1);
+        }
     }
 }

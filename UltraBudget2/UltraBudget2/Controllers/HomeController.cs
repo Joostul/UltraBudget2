@@ -25,7 +25,7 @@ namespace UltraBudget2.Controllers
         {
             TempData["Categories"] = _repository.GetSubCategoriesDropdown();
             TempData["Accounts"] = _repository.GetAccountsDropdown();
-            TempData["MasterCategories"] = _repository.GetCategories();
+            TempData["MasterCategories"] = _repository.GetMasterCategories();
             return View(_repository.Export());
         }
 
@@ -76,7 +76,7 @@ namespace UltraBudget2.Controllers
             }
             foreach (var category in budget.Categories)
             {
-                _repository.UpsertCategory(category);
+                _repository.UpsertMasterCategory(category);
             }
             foreach (var transaction in budget.Transactions)
             {
@@ -106,6 +106,25 @@ namespace UltraBudget2.Controllers
             }
 
             return View();
+        }
+
+        public IActionResult UpdateBudget(string id, decimal value)
+        {
+            var month = DateTimeExtensions.BudgetIdToDatetime(id);
+            var strings = id.Split('_');
+            var mastercategoryId = Guid.Parse(strings[0]);
+            var subcategoryId = Guid.Parse(strings[1]);
+
+            var budget = new Budget()
+            {
+                Balance = value,
+                Month = month
+            };
+
+            _repository.UpsertBudget(mastercategoryId, subcategoryId, budget);
+
+            var subcategories = _repository.GetSubCategories();
+            return new EmptyResult();
         }
     }
 }
