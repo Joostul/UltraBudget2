@@ -70,7 +70,7 @@ namespace UltraBudget2.Repositories
                 return new List<Transaction>();
             }
 
-            return transactions.OrderByDescending(t => t.DateTime);
+            return transactions.OrderByDescending(t => t.DateTime).ToList();
         }
 
         public Transaction GetTransaction(Guid id)
@@ -96,7 +96,7 @@ namespace UltraBudget2.Repositories
                 return new List<MasterCategory>();
             }
 
-            return categories;
+            return categories.OrderByDescending(c => c.Name).ToList();
         }
 
         public MasterCategory GetMasterCategory(Guid id)
@@ -153,7 +153,7 @@ namespace UltraBudget2.Repositories
 
         public IEnumerable<SubCategory> GetSubCategoriesForMaster(Guid id)
         {
-            return GetMasterCategory(id).SubCategories;
+            return GetMasterCategory(id).SubCategories.OrderByDescending(c => c.Name).ToList();
         }
 
         public SubCategory GetSubCategory(Guid id)
@@ -177,6 +177,7 @@ namespace UltraBudget2.Repositories
                     var existingSubcategory = mastercategory.SubCategories.SingleOrDefault(s => s.Name == subCategory.Name);
                     var newBudgets = subCategory.Budgets.Except(existingSubcategory.Budgets);
                     var updatedBudgets = existingSubcategory.Budgets;
+                    // If the page is not refreshed, this is not needed, otherwise yes??!
                     updatedBudgets.AddRange(newBudgets);
 
                     var updatedSubcategory = new SubCategory()
@@ -196,7 +197,7 @@ namespace UltraBudget2.Repositories
 
         public IEnumerable<SubCategory> GetSubCategories()
         {
-            return GetMasterCategories().SelectMany(m => m.SubCategories);
+            return GetMasterCategories().SelectMany(m => m.SubCategories).OrderByDescending(c => c.Name).ToList();
         }
 
         // Import/export dao
@@ -225,7 +226,7 @@ namespace UltraBudget2.Repositories
                 return new List<Account>();
             }
 
-            return accounts;
+            return accounts.OrderByDescending(a => a.Name).ToList();
         }
 
         public Account GetAccount(Guid id)
@@ -274,14 +275,14 @@ namespace UltraBudget2.Repositories
         public void UpsertBudget(Guid mastercategoryId, Guid subcategoryId, Budget budget)
         {
             var subcategory = GetSubCategory(subcategoryId);
-            if(!subcategory.Budgets.Any(b => b.Month == budget.Month))
+            if(!subcategory.Budgets.Any(b => b.Month.Date == budget.Month.Date))
             {
                 subcategory.Budgets.Add(budget);
                 UpsertSubcategory(mastercategoryId, subcategory);
             }
             else
             {
-                var existingBudget = subcategory.Budgets.SingleOrDefault(b => b.Month == budget.Month);
+                var existingBudget = subcategory.Budgets.SingleOrDefault(b => b.Month.Date == budget.Month.Date);
                 var updatedBudget = new Budget()
                 {
                     Balance = budget.Balance,

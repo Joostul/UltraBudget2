@@ -6,7 +6,7 @@ namespace UltraBudget2.Extensions
     {
         public static DateTime GetFirstDayOfMonth(this DateTime value)
         {
-            return new DateTime(value.Year, value.Month, value.Day);
+            return new DateTime(value.Year, value.Month, 1);
         }
 
         public static DateTime BudgetIdToDatetime(string id)
